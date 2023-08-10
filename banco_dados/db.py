@@ -2,9 +2,9 @@ from datetime import date
 
 banco_dados = {
     "bd_clientes": {
-        "77542415603": {"nome": "Cliente Um", "data_nascimento": date(2000, 1, 1)},
-        "64559533806": {"nome": "Cliente Dois", "data_nascimento": date(1998, 5, 3)},
-        "04371114407": {"nome": "Cliente Três", "data_nascimento": date(2004, 2, 8)},
+        "77542415603": {"nome": "Raquel", "data_nascimento": date(2000, 1, 1)},
+        "64559533806": {"nome": "Bruno", "data_nascimento": date(1998, 5, 3)},
+        "04371114407": {"nome": "Mauricio", "data_nascimento": date(2004, 2, 8)},
     },
     "bd_laboratorios": {
         "58066331000104": {

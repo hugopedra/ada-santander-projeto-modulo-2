@@ -77,3 +77,9 @@ class Clientes:
             }
             self.buscar_cliente(cpf)
             return "Cliente cadastrado com sucesso"
+
+    def relatorio_clientes(self):
+        clientes = [{"cpf": key, **value} for key, value in bd_clientes.items()]
+        funcao_sort = lambda x: x["nome"]
+        clientes.sort(key=funcao_sort)
+        [print(cliente) for cliente in clientes]
