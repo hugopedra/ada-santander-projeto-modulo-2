@@ -56,17 +56,16 @@ class Clientes:
 
     def buscar_cliente(self, cpf: str) -> dict:
         if cpf in bd_clientes and bd_clientes[cpf]:
-            client = bd_clientes[cpf]
-            self.nome = client["nome"]
+            cliente = bd_clientes[cpf]
+            self.nome = cliente["nome"]
             self.cpf = cpf
-            self.data_nascimento = client["data_nascimento"]
-            return {"cpf": cpf, **client}
+            self.data_nascimento = cliente["data_nascimento"]
+            return {"cpf": cpf, **cliente}
         else:
             return "Cliente não localizado"
 
     def cadastrar_cliente(self, nome: str, cpf: str, data_nascimento: str) -> None:
         cpf = self.valida_cpf(cpf)
-
         if cpf in bd_clientes:
             raise ClienteJaCadastrado()
         else:

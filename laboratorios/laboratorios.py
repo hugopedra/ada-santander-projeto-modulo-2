@@ -1,4 +1,12 @@
+from banco_dados.db import banco_dados
 
+bd_laboratorios = banco_dados["bd_laboratorios"]
+
+
+class LaboratorioJaCadastrado(Exception):
+    def __init__(self, mensagem: str = "Laboratorio já cadastrado"):
+        self._erro = mensagem
+        super().__init__(self._erro)
 
 
 class Laboratorios:
@@ -10,68 +18,85 @@ class Laboratorios:
         self._cidade = None
         self._estado = None
 
+    def _get_cnpj(self) -> str:
+        return self._cnpj
 
-def _get_cnpj(self) -> str:
-    return self._cnpj
+    def _set_cnpj(self, cnpj: str) -> None:
+        self._cnpj = cnpj
 
+    nome = property(_get_cnpj, _set_cnpj)
 
-def _set_cnpj(self, cnpj: str) -> None:
-    self._cnpj = cnpj
+    def _get_nome(self) -> str:
+        return self._nome
 
+    def _set_nome(self, nome: str) -> None:
+        self._nome = nome
 
-nome = property(_get_cnpj, _set_cnpj)
+    nome = property(_get_nome, _set_nome)
 
+    def _get_endereco(self) -> str:
+        return self._endereco
 
-def _get_nome(self) -> str:
-    return self._nome
+    def _set_endereco(self, endereco: str) -> None:
+        self._endereco = endereco
 
+    endereco = property(_get_endereco, _set_endereco)
 
-def _set_nome(self, nome: str) -> None:
-    self._nome = nome
+    def _get_telefone(self) -> str:
+        return self._telefone
 
+    def _set_telefone(self, telefone: str) -> None:
+        self._telefone = telefone
 
-nome = property(_get_nome, _set_nome)
+    telefone = property(_get_telefone, _set_telefone)
 
+    def _get_cidade(self) -> str:
+        return self._cidade
 
-def _get_endereco(self) -> str:
-    return self._endereco
+    def _set_cidade(self, cidade: str) -> None:
+        self._cidade = cidade
 
+    cidade = property(_get_cidade, _set_cidade)
 
-def _set_endereco(self, endereco: str) -> None:
-    self._endereco = endereco
+    def _get_estado(self) -> str:
+        return self._estado
 
+    def _set_estado(self, estado: str) -> None:
+        self._estado = estado
 
-endereco = property(_get_endereco, _set_endereco)
+    estado = property(_get_estado, _set_estado)
 
+    def buscar_laboratorio(self, cnpj: str) -> dict:
+        if cnpj in bd_laboratorios and bd_laboratorios[cnpj]:
+            laboratorio = bd_laboratorios[cnpj]
+            self.cnpj = cnpj
+            self.nome = laboratorio["nome"]
+            self.endereco = laboratorio["endereco"]
+            self.cidade = laboratorio["cidade"]
+            self.estado = laboratorio["estado"]
 
-def _get_telefone(self) -> str:
-    return self._telefone
+            return {"cnpj": cnpj, **laboratorio}
+        else:
+            return "Laboratório não localizado"
 
-
-def _set_telefone(self, telefone: str) -> None:
-    self._telefone = telefone
-
-
-telefone = property(_get_telefone, _set_telefone)
-
-
-def _get_cidade(self) -> str:
-    return self._cidade
-
-
-def _set_cidade(self, cidade: str) -> None:
-    self._cidade = cidade
-
-
-cidade = property(_get_cidade, _set_cidade)
-
-
-def _get_estado(self) -> str:
-    return self._estado
-
-
-def _set_estado(self, estado: str) -> None:
-    self._estado = estado
-
-
-estado = property(_get_estado, _set_estado)
+    def cadastrar_laboratorio(
+        self,
+        cnpj: str,
+        nome: str,
+        endereco: str,
+        telefone: str,
+        cidade: str,
+        estado: str,
+    ) -> None:
+        if cnpj in bd_laboratorios:
+            raise LaboratorioJaCadastrado()
+        else:
+            bd_laboratorios[cnpj] = {
+                "nome": nome,
+                "endereco": endereco,
+                "telefone": telefone,
+                "cidade": cidade,
+                "estado": estado,
+            }
+            self.buscar_laboratorio(cnpj)
+            return "Laboratorio cadastrado com sucesso"
