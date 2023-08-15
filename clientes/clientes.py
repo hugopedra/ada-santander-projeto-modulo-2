@@ -1,19 +1,19 @@
+from module.module import ler_arquivo, salvar_arquivo
 from datetime import datetime, date
 import re
 
-# bd_clientes = {
-#     "77542415603": {"nome": "Cliente Um", "data_nascimento": date(2000, 1, 1)},
-#     "64559533806": {"nome": "Cliente Dois", "data_nascimento": date(1998, 5, 3)},
-#     "04371114407": {"nome": "Cliente Três", "data_nascimento": date(2004, 2, 8)},
-# }
 
-from banco_dados.db import banco_dados
-
-bd_clientes = banco_dados["bd_clientes"]
+bd = ler_arquivo()
 
 
 class ClienteJaCadastrado(Exception):
     def __init__(self, mensagem: str = "Cliente já cadastrado"):
+        self._erro = mensagem
+        super().__init__(self._erro)
+
+
+class ClienteNaoLoacalizado(Exception):
+    def __init__(self, mensagem: str = "Cliente não localizado"):
         self._erro = mensagem
         super().__init__(self._erro)
 
@@ -55,31 +55,33 @@ class Clientes:
     data_nascimento = property(_get_data_nascimento, _set_data_nascimento)
 
     def buscar_cliente(self, cpf: str) -> dict:
-        if cpf in bd_clientes and bd_clientes[cpf]:
-            cliente = bd_clientes[cpf]
+        if cpf in bd["bd_clientes"] and bd["bd_clientes"][cpf]:
+            cliente = bd["bd_clientes"][cpf]
             self.nome = cliente["nome"]
             self.cpf = cpf
             self.data_nascimento = cliente["data_nascimento"]
             return {"cpf": cpf, **cliente}
         else:
-            return "Cliente não localizado"
+            raise ClienteNaoLoacalizado()
 
-    def cadastrar_cliente(self, nome: str, cpf: str, data_nascimento: str) -> None:
+    def cadastrar_cliente(self, nome: str, cpf: str, data_nascimento: str) -> str:
+        print(bd)
         cpf = self.valida_cpf(cpf)
-        if cpf in bd_clientes:
+        if cpf in bd["bd_clientes"]:
             raise ClienteJaCadastrado()
         else:
-            bd_clientes[cpf] = {
+            bd["bd_clientes"][cpf] = {
                 "nome": nome,
                 "data_nascimento": datetime.strptime(
                     data_nascimento, "%d/%m/%Y"
-                ).date(),
+                ).isoformat(),
             }
+            salvar_arquivo(bd)
             self.buscar_cliente(cpf)
             return "Cliente cadastrado com sucesso"
 
-    def relatorio_clientes(self):
-        clientes = [{"cpf": key, **value} for key, value in bd_clientes.items()]
+    def relatorio_clientes(self) -> None:
+        clientes = [{"cpf": key, **value} for key, value in bd["bd_clientes"].items()]
         funcao_sort = lambda x: x["nome"]
         clientes.sort(key=funcao_sort)
         [print(cliente) for cliente in clientes]
